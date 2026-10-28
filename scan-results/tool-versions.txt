@@ -1,0 +1,4 @@
+terraform 1.13.4
+checkov 3.2.449
+trivy 0.76.1
+gitleaks 8.24.2

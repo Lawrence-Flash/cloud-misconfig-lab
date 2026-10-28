@@ -1,0 +1,25 @@
+{
+  "check_type": "terraform",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_144",
+        "check_name": "cross-region replication",
+        "severity": null,
+        "file_path": "/storage.tf",
+        "resource": "aws_s3_bucket.data"
+      }
+    ],
+    "skipped_checks": [
+      {
+        "check_id": "CKV_AWS_252",
+        "check_name": "CloudTrail SNS",
+        "severity": null,
+        "file_path": "/logging.tf",
+        "resource": "aws_cloudtrail.lab",
+        "check_result": {"suppress_comment": "No SNS topic in this single-account lab."}
+      }
+    ]
+  },
+  "summary": {"passed": 4, "failed": 1, "skipped": 1, "parsing_errors": 0, "checkov_version": "3.2.449"}
+}
