@@ -1,0 +1,47 @@
+[
+  {
+    "check_type": "terraform",
+    "results": {
+      "failed_checks": [
+        {
+          "check_id": "CKV_AWS_24",
+          "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+          "severity": null,
+          "file_path": "/compute.tf",
+          "resource": "aws_security_group_rule.app_ssh"
+        }
+      ],
+      "skipped_checks": [],
+      "parsing_errors": []
+    },
+    "summary": {
+      "passed": 3,
+      "failed": 1,
+      "skipped": 0,
+      "parsing_errors": 0,
+      "checkov_version": "3.2.449"
+    }
+  },
+  {
+    "check_type": "secrets",
+    "results": {
+      "failed_checks": [
+        {
+          "check_id": "CKV_SECRET_2",
+          "check_name": "AWS Access Key",
+          "severity": null,
+          "file_path": "/variables.tf",
+          "resource": "secret-fingerprint"
+        }
+      ],
+      "skipped_checks": []
+    },
+    "summary": {
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "parsing_errors": 0,
+      "checkov_version": "3.2.449"
+    }
+  }
+]

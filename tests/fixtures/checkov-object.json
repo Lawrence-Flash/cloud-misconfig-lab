@@ -1,0 +1,45 @@
+{
+  "check_type": "terraform",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_17",
+        "check_name": "RDS is publicly accessible",
+        "severity": "HIGH",
+        "file_path": "/database.tf",
+        "resource": "aws_db_instance.lab"
+      }
+    ],
+    "skipped_checks": [
+      {
+        "check_id": "CKV_AWS_144",
+        "check_name": "cross-region replication",
+        "severity": null,
+        "file_path": "/storage.tf",
+        "resource": "aws_s3_bucket.data",
+        "check_result": {
+          "result": "SKIPPED",
+          "suppress_comment": "Single-region lab, no second bucket."
+        }
+      },
+      {
+        "check_id": "CKV_AWS_18",
+        "check_name": "access logging",
+        "severity": "HIGH",
+        "file_path": "/storage.tf",
+        "resource": "aws_s3_bucket.logs",
+        "check_result": {
+          "result": "SKIPPED",
+          "suppress_comment": ""
+        }
+      }
+    ]
+  },
+  "summary": {
+    "passed": 1,
+    "failed": 1,
+    "skipped": 2,
+    "parsing_errors": 0,
+    "checkov_version": "3.2.449"
+  }
+}

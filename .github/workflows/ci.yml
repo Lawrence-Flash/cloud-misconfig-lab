@@ -1,0 +1,214 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform ${{ matrix.folder }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        folder: [vulnerable, fixed]
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.13.4
+          terraform_wrapper: false
+      - name: terraform fmt
+        run: terraform fmt -check -recursive ${{ matrix.folder }}
+      - name: terraform init
+        working-directory: ${{ matrix.folder }}
+        run: terraform init -backend=false -input=false
+      - name: terraform validate
+        working-directory: ${{ matrix.folder }}
+        run: terraform validate
+
+  checkov:
+    name: Checkov ${{ matrix.side }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - side: vulnerable
+            expect_findings: true
+          - side: fixed
+            expect_findings: false
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Install Checkov
+        run: python3 -m pip install -r requirements-scanners.txt
+      - name: Scan
+        run: |
+          mkdir -p "${RUNNER_TEMP}/scans"
+          checkov -d "${{ matrix.side }}" \
+            --framework terraform --framework secrets \
+            --download-external-modules false \
+            --quiet --soft-fail \
+            -o json > "${RUNNER_TEMP}/scans/checkov-${{ matrix.side }}.json"
+      - name: Gate
+        run: |
+          if [[ "${{ matrix.expect_findings }}" == "true" ]]; then
+            python3 -m misconfig gate \
+              --scan-dir "${RUNNER_TEMP}/scans" \
+              --side "${{ matrix.side }}" \
+              --expect-findings
+          else
+            python3 -m misconfig gate \
+              --scan-dir "${RUNNER_TEMP}/scans" \
+              --side "${{ matrix.side }}" \
+              --fail-on CRITICAL,HIGH
+          fi
+
+  trivy:
+    name: Trivy ${{ matrix.side }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - side: vulnerable
+            expect_findings: true
+            exit_code: "0"
+          - side: fixed
+            expect_findings: false
+            exit_code: "0"
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Install Trivy
+        run: |
+          curl -fsSL -o /tmp/trivy.tar.gz \
+            https://github.com/aquasecurity/trivy/releases/download/v0.76.1/trivy_0.76.1_Linux-64bit.tar.gz
+          sudo tar -xzf /tmp/trivy.tar.gz -C /usr/local/bin trivy
+          trivy --version
+      - name: Scan
+        run: |
+          mkdir -p "${RUNNER_TEMP}/scans"
+          trivy config \
+            --skip-version-check \
+            --exit-code ${{ matrix.exit_code }} \
+            --format json \
+            --output "${RUNNER_TEMP}/scans/trivy-${{ matrix.side }}.json" \
+            "${{ matrix.side }}"
+      - name: Gate
+        run: |
+          if [[ "${{ matrix.expect_findings }}" == "true" ]]; then
+            python3 -m misconfig gate \
+              --scan-dir "${RUNNER_TEMP}/scans" \
+              --side "${{ matrix.side }}" \
+              --expect-findings
+          else
+            python3 -m misconfig gate \
+              --scan-dir "${RUNNER_TEMP}/scans" \
+              --side "${{ matrix.side }}" \
+              --fail-on CRITICAL,HIGH
+          fi
+
+  unit-tests:
+    name: Python unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Report matches committed scan JSON
+        run: |
+          python3 -m misconfig report
+          git diff --exit-code docs/scan-summary.md
+
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks
+        run: |
+          curl -fsSL -o /tmp/gitleaks.tar.gz \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.24.2/gitleaks_8.24.2_linux_x64.tar.gz
+          sudo tar -xzf /tmp/gitleaks.tar.gz -C /usr/local/bin gitleaks
+          gitleaks version
+      - name: Scan history and working tree
+        run: |
+          gitleaks detect --source . --redact --exit-code 1
+          gitleaks detect --no-git --source . --redact --exit-code 1
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: github/codeql-action/init@v4.39.1
+        with:
+          languages: python
+          build-mode: none
+      - uses: github/codeql-action/analyze@v4.39.1
+        with:
+          category: /language:python
+
+  sarif:
+    name: SARIF upload for fixed
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Install scanners
+        run: |
+          python3 -m pip install -r requirements-scanners.txt
+          curl -fsSL -o /tmp/trivy.tar.gz \
+            https://github.com/aquasecurity/trivy/releases/download/v0.76.1/trivy_0.76.1_Linux-64bit.tar.gz
+          sudo tar -xzf /tmp/trivy.tar.gz -C /usr/local/bin trivy
+      - name: Checkov SARIF
+        run: |
+          mkdir -p checkov-sarif
+          checkov -d fixed \
+            --framework terraform --framework secrets \
+            --download-external-modules false \
+            --quiet --soft-fail \
+            -o sarif \
+            --output-file-path checkov-sarif
+      - name: Trivy SARIF
+        run: |
+          trivy config \
+            --skip-version-check \
+            --format sarif \
+            --output trivy-fixed.sarif \
+            --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL \
+            fixed/
+      - name: Upload Checkov SARIF
+        uses: github/codeql-action/upload-sarif@v4.39.1
+        with:
+          sarif_file: checkov-sarif/results_sarif.sarif
+          category: checkov-fixed
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v4.39.1
+        with:
+          sarif_file: trivy-fixed.sarif
+          category: trivy-fixed

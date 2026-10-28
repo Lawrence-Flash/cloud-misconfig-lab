@@ -1,0 +1,23 @@
+variable "aws_region" {
+  description = "Region used only in configuration. Cape Town. Nothing is deployed."
+  type        = string
+  default     = "af-south-1"
+}
+
+variable "account_id" {
+  description = "Placeholder account id from the AWS docs examples. Not an account this lab can access."
+  type        = string
+  default     = "123456789012"
+}
+
+variable "name_prefix" {
+  description = "Prefix for lab resource names."
+  type        = string
+  default     = "cloud-misconfig-lab"
+}
+
+variable "ami_id" {
+  description = "Placeholder AMI id. RunInstances is never called."
+  type        = string
+  default     = "ami-0123456789abcdef0"
+}

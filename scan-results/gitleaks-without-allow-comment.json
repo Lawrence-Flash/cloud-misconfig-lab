@@ -1,0 +1,22 @@
+[
+  {
+    "RuleID": "aws-access-token",
+    "Description": "Identified a pattern that may indicate AWS credentials, risking unauthorized cloud resource access and data breaches on AWS platforms.",
+    "StartLine": 29,
+    "EndLine": 29,
+    "StartColumn": 19,
+    "EndColumn": 38,
+    "Match": "REDACTED",
+    "Secret": "REDACTED",
+    "File": "vulnerable/variables.tf",
+    "SymlinkFile": "",
+    "Commit": "",
+    "Entropy": 3.521928,
+    "Author": "",
+    "Email": "",
+    "Date": "",
+    "Message": "",
+    "Tags": [],
+    "Fingerprint": "vulnerable/variables.tf:aws-access-token:29"
+  }
+]

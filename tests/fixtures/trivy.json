@@ -1,0 +1,36 @@
+{
+  "Trivy": {"Version": "0.76.1"},
+  "Results": [
+    {
+      "Target": "vulnerable/compute.tf",
+      "Misconfigurations": [
+        {
+          "ID": "AWS-0107",
+          "Title": "Security groups should not allow unrestricted ingress to SSH or RDP",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "CauseMetadata": {"Resource": "aws_security_group_rule.app_ssh"}
+        },
+        {
+          "ID": "AWS-0090",
+          "Title": "S3 Data should be versioned",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "CauseMetadata": {"Resource": "aws_s3_bucket.data"}
+        }
+      ]
+    },
+    {
+      "Target": "vulnerable/compute.tf",
+      "Misconfigurations": [
+        {
+          "ID": "AWS-0104",
+          "Title": "Unrestricted egress",
+          "Severity": "CRITICAL",
+          "Status": "FAIL",
+          "CauseMetadata": {"Resource": "aws_security_group_rule.app_egress_all"}
+        }
+      ]
+    }
+  ]
+}

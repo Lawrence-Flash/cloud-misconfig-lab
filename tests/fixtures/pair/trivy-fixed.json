@@ -1,0 +1,6 @@
+{
+  "Trivy": {"Version": "0.76.1"},
+  "Results": [
+    {"Target": ".", "MisconfSummary": {"Successes": 4, "Failures": 0}}
+  ]
+}

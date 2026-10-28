@@ -1,0 +1,5 @@
+{
+  "check_type": "terraform",
+  "results": {"failed_checks": [], "skipped_checks": []},
+  "summary": {"passed": 1, "failed": 0, "skipped": 0, "parsing_errors": 0, "checkov_version": "3.2.449"}
+}

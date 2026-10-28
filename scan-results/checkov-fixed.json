@@ -1,0 +1,2533 @@
+{
+    "check_type": "terraform",
+    "results": {
+        "failed_checks": [
+            {
+                "check_id": "CKV_AWS_252",
+                "bc_check_id": "BC_AWS_GENERAL_175",
+                "check_name": "Ensure CloudTrail defines an SNS Topic",
+                "check_result": {
+                    "result": "FAILED",
+                    "evaluated_keys": [
+                        "sns_topic_name"
+                    ]
+                },
+                "code_block": [
+                    [
+                        116,
+                        "resource \"aws_cloudtrail\" \"lab\" {\n"
+                    ],
+                    [
+                        117,
+                        "  name                          = \"lab-trail\"\n"
+                    ],
+                    [
+                        118,
+                        "  s3_bucket_name                = aws_s3_bucket.trail.id\n"
+                    ],
+                    [
+                        119,
+                        "  is_multi_region_trail         = true\n"
+                    ],
+                    [
+                        120,
+                        "  enable_log_file_validation    = true\n"
+                    ],
+                    [
+                        121,
+                        "  include_global_service_events = true\n"
+                    ],
+                    [
+                        122,
+                        "  enable_logging                = true\n"
+                    ],
+                    [
+                        123,
+                        "  kms_key_id                    = aws_kms_key.lab.arn\n"
+                    ],
+                    [
+                        124,
+                        "  cloud_watch_logs_group_arn    = \"${aws_cloudwatch_log_group.trail.arn}:*\"\n"
+                    ],
+                    [
+                        125,
+                        "  cloud_watch_logs_role_arn     = aws_iam_role.trail_logs.arn\n"
+                    ],
+                    [
+                        126,
+                        "\n"
+                    ],
+                    [
+                        127,
+                        "  event_selector {\n"
+                    ],
+                    [
+                        128,
+                        "    read_write_type           = \"All\"\n"
+                    ],
+                    [
+                        129,
+                        "    include_management_events = true\n"
+                    ],
+                    [
+                        130,
+                        "\n"
+                    ],
+                    [
+                        131,
+                        "    data_resource {\n"
+                    ],
+                    [
+                        132,
+                        "      type   = \"AWS::S3::Object\"\n"
+                    ],
+                    [
+                        133,
+                        "      values = [\"${aws_s3_bucket.data.arn}/\"]\n"
+                    ],
+                    [
+                        134,
+                        "    }\n"
+                    ],
+                    [
+                        135,
+                        "  }\n"
+                    ],
+                    [
+                        136,
+                        "\n"
+                    ],
+                    [
+                        137,
+                        "  tags = local.common_tags\n"
+                    ],
+                    [
+                        138,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/logging.tf",
+                "file_abs_path": "fixed/logging.tf",
+                "repo_file_path": "/fixed/logging.tf",
+                "file_line_range": [
+                    116,
+                    138
+                ],
+                "resource": "aws_cloudtrail.lab",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.resource.aws.CloudtrailDefinesSNSTopic",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Environment": "lab",
+                    "ManagedBy": "terraform",
+                    "Project": "cloud-misconfig-lab"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-cloudtrail-defines-an-sns-topic",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/logging.tf",
+                "breadcrumbs": {
+                    "tags": [
+                        {
+                            "type": "locals",
+                            "name": "common_tags",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV_AWS_356",
+                "bc_check_id": "BC_AWS_IAM_89",
+                "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's resource for restrictable actions",
+                "check_result": {
+                    "result": "FAILED",
+                    "evaluated_keys": [
+                        "statement/[0]/actions"
+                    ]
+                },
+                "code_block": [
+                    [
+                        16,
+                        "data \"aws_iam_policy_document\" \"kms\" {\n"
+                    ],
+                    [
+                        17,
+                        "  statement {\n"
+                    ],
+                    [
+                        18,
+                        "    sid    = \"RootAdmin\"\n"
+                    ],
+                    [
+                        19,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        20,
+                        "\n"
+                    ],
+                    [
+                        21,
+                        "    principals {\n"
+                    ],
+                    [
+                        22,
+                        "      type        = \"AWS\"\n"
+                    ],
+                    [
+                        23,
+                        "      identifiers = [\"arn:aws:iam::${var.account_id}:root\"]\n"
+                    ],
+                    [
+                        24,
+                        "    }\n"
+                    ],
+                    [
+                        25,
+                        "\n"
+                    ],
+                    [
+                        26,
+                        "    actions   = [\"kms:*\"]\n"
+                    ],
+                    [
+                        27,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        28,
+                        "  }\n"
+                    ],
+                    [
+                        29,
+                        "\n"
+                    ],
+                    [
+                        30,
+                        "  statement {\n"
+                    ],
+                    [
+                        31,
+                        "    sid    = \"CloudTrailEncrypt\"\n"
+                    ],
+                    [
+                        32,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        33,
+                        "\n"
+                    ],
+                    [
+                        34,
+                        "    principals {\n"
+                    ],
+                    [
+                        35,
+                        "      type        = \"Service\"\n"
+                    ],
+                    [
+                        36,
+                        "      identifiers = [\"cloudtrail.amazonaws.com\"]\n"
+                    ],
+                    [
+                        37,
+                        "    }\n"
+                    ],
+                    [
+                        38,
+                        "\n"
+                    ],
+                    [
+                        39,
+                        "    actions = [\n"
+                    ],
+                    [
+                        40,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        41,
+                        "      \"kms:DescribeKey\",\n"
+                    ],
+                    [
+                        42,
+                        "    ]\n"
+                    ],
+                    [
+                        43,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        44,
+                        "\n"
+                    ],
+                    [
+                        45,
+                        "    condition {\n"
+                    ],
+                    [
+                        46,
+                        "      test     = \"StringEquals\"\n"
+                    ],
+                    [
+                        47,
+                        "      variable = \"aws:SourceArn\"\n"
+                    ],
+                    [
+                        48,
+                        "      values   = [\"arn:aws:cloudtrail:${var.aws_region}:${var.account_id}:trail/lab-trail\"]\n"
+                    ],
+                    [
+                        49,
+                        "    }\n"
+                    ],
+                    [
+                        50,
+                        "  }\n"
+                    ],
+                    [
+                        51,
+                        "\n"
+                    ],
+                    [
+                        52,
+                        "  statement {\n"
+                    ],
+                    [
+                        53,
+                        "    sid    = \"CloudWatchLogs\"\n"
+                    ],
+                    [
+                        54,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        55,
+                        "\n"
+                    ],
+                    [
+                        56,
+                        "    principals {\n"
+                    ],
+                    [
+                        57,
+                        "      type        = \"Service\"\n"
+                    ],
+                    [
+                        58,
+                        "      identifiers = [\"logs.${var.aws_region}.amazonaws.com\"]\n"
+                    ],
+                    [
+                        59,
+                        "    }\n"
+                    ],
+                    [
+                        60,
+                        "\n"
+                    ],
+                    [
+                        61,
+                        "    actions = [\n"
+                    ],
+                    [
+                        62,
+                        "      \"kms:Encrypt\",\n"
+                    ],
+                    [
+                        63,
+                        "      \"kms:Decrypt\",\n"
+                    ],
+                    [
+                        64,
+                        "      \"kms:ReEncrypt*\",\n"
+                    ],
+                    [
+                        65,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        66,
+                        "      \"kms:Describe*\",\n"
+                    ],
+                    [
+                        67,
+                        "    ]\n"
+                    ],
+                    [
+                        68,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        69,
+                        "\n"
+                    ],
+                    [
+                        70,
+                        "    condition {\n"
+                    ],
+                    [
+                        71,
+                        "      test     = \"ArnEquals\"\n"
+                    ],
+                    [
+                        72,
+                        "      variable = \"kms:EncryptionContext:aws:logs:arn\"\n"
+                    ],
+                    [
+                        73,
+                        "      values   = [\"arn:aws:logs:${var.aws_region}:${var.account_id}:log-group:lab-cloudtrail\"]\n"
+                    ],
+                    [
+                        74,
+                        "    }\n"
+                    ],
+                    [
+                        75,
+                        "  }\n"
+                    ],
+                    [
+                        76,
+                        "\n"
+                    ],
+                    [
+                        77,
+                        "  statement {\n"
+                    ],
+                    [
+                        78,
+                        "    sid    = \"PersistentDataServices\"\n"
+                    ],
+                    [
+                        79,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        80,
+                        "\n"
+                    ],
+                    [
+                        81,
+                        "    principals {\n"
+                    ],
+                    [
+                        82,
+                        "      type = \"Service\"\n"
+                    ],
+                    [
+                        83,
+                        "      identifiers = [\n"
+                    ],
+                    [
+                        84,
+                        "        \"rds.amazonaws.com\",\n"
+                    ],
+                    [
+                        85,
+                        "        \"ec2.amazonaws.com\",\n"
+                    ],
+                    [
+                        86,
+                        "        \"s3.amazonaws.com\",\n"
+                    ],
+                    [
+                        87,
+                        "      ]\n"
+                    ],
+                    [
+                        88,
+                        "    }\n"
+                    ],
+                    [
+                        89,
+                        "\n"
+                    ],
+                    [
+                        90,
+                        "    actions = [\n"
+                    ],
+                    [
+                        91,
+                        "      \"kms:Encrypt\",\n"
+                    ],
+                    [
+                        92,
+                        "      \"kms:Decrypt\",\n"
+                    ],
+                    [
+                        93,
+                        "      \"kms:ReEncrypt*\",\n"
+                    ],
+                    [
+                        94,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        95,
+                        "      \"kms:DescribeKey\",\n"
+                    ],
+                    [
+                        96,
+                        "      \"kms:CreateGrant\",\n"
+                    ],
+                    [
+                        97,
+                        "    ]\n"
+                    ],
+                    [
+                        98,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        99,
+                        "\n"
+                    ],
+                    [
+                        100,
+                        "    condition {\n"
+                    ],
+                    [
+                        101,
+                        "      test     = \"StringEquals\"\n"
+                    ],
+                    [
+                        102,
+                        "      variable = \"kms:CallerAccount\"\n"
+                    ],
+                    [
+                        103,
+                        "      values   = [var.account_id]\n"
+                    ],
+                    [
+                        104,
+                        "    }\n"
+                    ],
+                    [
+                        105,
+                        "  }\n"
+                    ],
+                    [
+                        106,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/logging.tf",
+                "file_abs_path": "fixed/logging.tf",
+                "repo_file_path": "/fixed/logging.tf",
+                "file_line_range": [
+                    16,
+                    106
+                ],
+                "resource": "aws_iam_policy_document.kms",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.data.aws.ResourcePolicyDocument",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-356",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/logging.tf",
+                "breadcrumbs": {
+                    "statement.0.principals.identifiers.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0.principals.identifiers": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0.principals": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals.identifiers.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals.identifiers": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV_AWS_111",
+                "bc_check_id": "BC_AWS_IAM_57",
+                "check_name": "Ensure IAM policies does not allow write access without constraints",
+                "check_result": {
+                    "result": "FAILED",
+                    "evaluated_keys": [
+                        "statement/[0]/actions"
+                    ]
+                },
+                "code_block": [
+                    [
+                        16,
+                        "data \"aws_iam_policy_document\" \"kms\" {\n"
+                    ],
+                    [
+                        17,
+                        "  statement {\n"
+                    ],
+                    [
+                        18,
+                        "    sid    = \"RootAdmin\"\n"
+                    ],
+                    [
+                        19,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        20,
+                        "\n"
+                    ],
+                    [
+                        21,
+                        "    principals {\n"
+                    ],
+                    [
+                        22,
+                        "      type        = \"AWS\"\n"
+                    ],
+                    [
+                        23,
+                        "      identifiers = [\"arn:aws:iam::${var.account_id}:root\"]\n"
+                    ],
+                    [
+                        24,
+                        "    }\n"
+                    ],
+                    [
+                        25,
+                        "\n"
+                    ],
+                    [
+                        26,
+                        "    actions   = [\"kms:*\"]\n"
+                    ],
+                    [
+                        27,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        28,
+                        "  }\n"
+                    ],
+                    [
+                        29,
+                        "\n"
+                    ],
+                    [
+                        30,
+                        "  statement {\n"
+                    ],
+                    [
+                        31,
+                        "    sid    = \"CloudTrailEncrypt\"\n"
+                    ],
+                    [
+                        32,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        33,
+                        "\n"
+                    ],
+                    [
+                        34,
+                        "    principals {\n"
+                    ],
+                    [
+                        35,
+                        "      type        = \"Service\"\n"
+                    ],
+                    [
+                        36,
+                        "      identifiers = [\"cloudtrail.amazonaws.com\"]\n"
+                    ],
+                    [
+                        37,
+                        "    }\n"
+                    ],
+                    [
+                        38,
+                        "\n"
+                    ],
+                    [
+                        39,
+                        "    actions = [\n"
+                    ],
+                    [
+                        40,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        41,
+                        "      \"kms:DescribeKey\",\n"
+                    ],
+                    [
+                        42,
+                        "    ]\n"
+                    ],
+                    [
+                        43,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        44,
+                        "\n"
+                    ],
+                    [
+                        45,
+                        "    condition {\n"
+                    ],
+                    [
+                        46,
+                        "      test     = \"StringEquals\"\n"
+                    ],
+                    [
+                        47,
+                        "      variable = \"aws:SourceArn\"\n"
+                    ],
+                    [
+                        48,
+                        "      values   = [\"arn:aws:cloudtrail:${var.aws_region}:${var.account_id}:trail/lab-trail\"]\n"
+                    ],
+                    [
+                        49,
+                        "    }\n"
+                    ],
+                    [
+                        50,
+                        "  }\n"
+                    ],
+                    [
+                        51,
+                        "\n"
+                    ],
+                    [
+                        52,
+                        "  statement {\n"
+                    ],
+                    [
+                        53,
+                        "    sid    = \"CloudWatchLogs\"\n"
+                    ],
+                    [
+                        54,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        55,
+                        "\n"
+                    ],
+                    [
+                        56,
+                        "    principals {\n"
+                    ],
+                    [
+                        57,
+                        "      type        = \"Service\"\n"
+                    ],
+                    [
+                        58,
+                        "      identifiers = [\"logs.${var.aws_region}.amazonaws.com\"]\n"
+                    ],
+                    [
+                        59,
+                        "    }\n"
+                    ],
+                    [
+                        60,
+                        "\n"
+                    ],
+                    [
+                        61,
+                        "    actions = [\n"
+                    ],
+                    [
+                        62,
+                        "      \"kms:Encrypt\",\n"
+                    ],
+                    [
+                        63,
+                        "      \"kms:Decrypt\",\n"
+                    ],
+                    [
+                        64,
+                        "      \"kms:ReEncrypt*\",\n"
+                    ],
+                    [
+                        65,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        66,
+                        "      \"kms:Describe*\",\n"
+                    ],
+                    [
+                        67,
+                        "    ]\n"
+                    ],
+                    [
+                        68,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        69,
+                        "\n"
+                    ],
+                    [
+                        70,
+                        "    condition {\n"
+                    ],
+                    [
+                        71,
+                        "      test     = \"ArnEquals\"\n"
+                    ],
+                    [
+                        72,
+                        "      variable = \"kms:EncryptionContext:aws:logs:arn\"\n"
+                    ],
+                    [
+                        73,
+                        "      values   = [\"arn:aws:logs:${var.aws_region}:${var.account_id}:log-group:lab-cloudtrail\"]\n"
+                    ],
+                    [
+                        74,
+                        "    }\n"
+                    ],
+                    [
+                        75,
+                        "  }\n"
+                    ],
+                    [
+                        76,
+                        "\n"
+                    ],
+                    [
+                        77,
+                        "  statement {\n"
+                    ],
+                    [
+                        78,
+                        "    sid    = \"PersistentDataServices\"\n"
+                    ],
+                    [
+                        79,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        80,
+                        "\n"
+                    ],
+                    [
+                        81,
+                        "    principals {\n"
+                    ],
+                    [
+                        82,
+                        "      type = \"Service\"\n"
+                    ],
+                    [
+                        83,
+                        "      identifiers = [\n"
+                    ],
+                    [
+                        84,
+                        "        \"rds.amazonaws.com\",\n"
+                    ],
+                    [
+                        85,
+                        "        \"ec2.amazonaws.com\",\n"
+                    ],
+                    [
+                        86,
+                        "        \"s3.amazonaws.com\",\n"
+                    ],
+                    [
+                        87,
+                        "      ]\n"
+                    ],
+                    [
+                        88,
+                        "    }\n"
+                    ],
+                    [
+                        89,
+                        "\n"
+                    ],
+                    [
+                        90,
+                        "    actions = [\n"
+                    ],
+                    [
+                        91,
+                        "      \"kms:Encrypt\",\n"
+                    ],
+                    [
+                        92,
+                        "      \"kms:Decrypt\",\n"
+                    ],
+                    [
+                        93,
+                        "      \"kms:ReEncrypt*\",\n"
+                    ],
+                    [
+                        94,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        95,
+                        "      \"kms:DescribeKey\",\n"
+                    ],
+                    [
+                        96,
+                        "      \"kms:CreateGrant\",\n"
+                    ],
+                    [
+                        97,
+                        "    ]\n"
+                    ],
+                    [
+                        98,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        99,
+                        "\n"
+                    ],
+                    [
+                        100,
+                        "    condition {\n"
+                    ],
+                    [
+                        101,
+                        "      test     = \"StringEquals\"\n"
+                    ],
+                    [
+                        102,
+                        "      variable = \"kms:CallerAccount\"\n"
+                    ],
+                    [
+                        103,
+                        "      values   = [var.account_id]\n"
+                    ],
+                    [
+                        104,
+                        "    }\n"
+                    ],
+                    [
+                        105,
+                        "  }\n"
+                    ],
+                    [
+                        106,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/logging.tf",
+                "file_abs_path": "fixed/logging.tf",
+                "repo_file_path": "/fixed/logging.tf",
+                "file_line_range": [
+                    16,
+                    106
+                ],
+                "resource": "aws_iam_policy_document.kms",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.data.aws.IAMWriteAccess",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-iam-policies-do-not-allow-write-access-without-constraint",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/logging.tf",
+                "breadcrumbs": {
+                    "statement.0.principals.identifiers.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0.principals.identifiers": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0.principals": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals.identifiers.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals.identifiers": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV_AWS_109",
+                "bc_check_id": "BC_AWS_IAM_56",
+                "check_name": "Ensure IAM policies does not allow permissions management / resource exposure without constraints",
+                "check_result": {
+                    "result": "FAILED",
+                    "evaluated_keys": [
+                        "statement/[0]/actions"
+                    ]
+                },
+                "code_block": [
+                    [
+                        16,
+                        "data \"aws_iam_policy_document\" \"kms\" {\n"
+                    ],
+                    [
+                        17,
+                        "  statement {\n"
+                    ],
+                    [
+                        18,
+                        "    sid    = \"RootAdmin\"\n"
+                    ],
+                    [
+                        19,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        20,
+                        "\n"
+                    ],
+                    [
+                        21,
+                        "    principals {\n"
+                    ],
+                    [
+                        22,
+                        "      type        = \"AWS\"\n"
+                    ],
+                    [
+                        23,
+                        "      identifiers = [\"arn:aws:iam::${var.account_id}:root\"]\n"
+                    ],
+                    [
+                        24,
+                        "    }\n"
+                    ],
+                    [
+                        25,
+                        "\n"
+                    ],
+                    [
+                        26,
+                        "    actions   = [\"kms:*\"]\n"
+                    ],
+                    [
+                        27,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        28,
+                        "  }\n"
+                    ],
+                    [
+                        29,
+                        "\n"
+                    ],
+                    [
+                        30,
+                        "  statement {\n"
+                    ],
+                    [
+                        31,
+                        "    sid    = \"CloudTrailEncrypt\"\n"
+                    ],
+                    [
+                        32,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        33,
+                        "\n"
+                    ],
+                    [
+                        34,
+                        "    principals {\n"
+                    ],
+                    [
+                        35,
+                        "      type        = \"Service\"\n"
+                    ],
+                    [
+                        36,
+                        "      identifiers = [\"cloudtrail.amazonaws.com\"]\n"
+                    ],
+                    [
+                        37,
+                        "    }\n"
+                    ],
+                    [
+                        38,
+                        "\n"
+                    ],
+                    [
+                        39,
+                        "    actions = [\n"
+                    ],
+                    [
+                        40,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        41,
+                        "      \"kms:DescribeKey\",\n"
+                    ],
+                    [
+                        42,
+                        "    ]\n"
+                    ],
+                    [
+                        43,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        44,
+                        "\n"
+                    ],
+                    [
+                        45,
+                        "    condition {\n"
+                    ],
+                    [
+                        46,
+                        "      test     = \"StringEquals\"\n"
+                    ],
+                    [
+                        47,
+                        "      variable = \"aws:SourceArn\"\n"
+                    ],
+                    [
+                        48,
+                        "      values   = [\"arn:aws:cloudtrail:${var.aws_region}:${var.account_id}:trail/lab-trail\"]\n"
+                    ],
+                    [
+                        49,
+                        "    }\n"
+                    ],
+                    [
+                        50,
+                        "  }\n"
+                    ],
+                    [
+                        51,
+                        "\n"
+                    ],
+                    [
+                        52,
+                        "  statement {\n"
+                    ],
+                    [
+                        53,
+                        "    sid    = \"CloudWatchLogs\"\n"
+                    ],
+                    [
+                        54,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        55,
+                        "\n"
+                    ],
+                    [
+                        56,
+                        "    principals {\n"
+                    ],
+                    [
+                        57,
+                        "      type        = \"Service\"\n"
+                    ],
+                    [
+                        58,
+                        "      identifiers = [\"logs.${var.aws_region}.amazonaws.com\"]\n"
+                    ],
+                    [
+                        59,
+                        "    }\n"
+                    ],
+                    [
+                        60,
+                        "\n"
+                    ],
+                    [
+                        61,
+                        "    actions = [\n"
+                    ],
+                    [
+                        62,
+                        "      \"kms:Encrypt\",\n"
+                    ],
+                    [
+                        63,
+                        "      \"kms:Decrypt\",\n"
+                    ],
+                    [
+                        64,
+                        "      \"kms:ReEncrypt*\",\n"
+                    ],
+                    [
+                        65,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        66,
+                        "      \"kms:Describe*\",\n"
+                    ],
+                    [
+                        67,
+                        "    ]\n"
+                    ],
+                    [
+                        68,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        69,
+                        "\n"
+                    ],
+                    [
+                        70,
+                        "    condition {\n"
+                    ],
+                    [
+                        71,
+                        "      test     = \"ArnEquals\"\n"
+                    ],
+                    [
+                        72,
+                        "      variable = \"kms:EncryptionContext:aws:logs:arn\"\n"
+                    ],
+                    [
+                        73,
+                        "      values   = [\"arn:aws:logs:${var.aws_region}:${var.account_id}:log-group:lab-cloudtrail\"]\n"
+                    ],
+                    [
+                        74,
+                        "    }\n"
+                    ],
+                    [
+                        75,
+                        "  }\n"
+                    ],
+                    [
+                        76,
+                        "\n"
+                    ],
+                    [
+                        77,
+                        "  statement {\n"
+                    ],
+                    [
+                        78,
+                        "    sid    = \"PersistentDataServices\"\n"
+                    ],
+                    [
+                        79,
+                        "    effect = \"Allow\"\n"
+                    ],
+                    [
+                        80,
+                        "\n"
+                    ],
+                    [
+                        81,
+                        "    principals {\n"
+                    ],
+                    [
+                        82,
+                        "      type = \"Service\"\n"
+                    ],
+                    [
+                        83,
+                        "      identifiers = [\n"
+                    ],
+                    [
+                        84,
+                        "        \"rds.amazonaws.com\",\n"
+                    ],
+                    [
+                        85,
+                        "        \"ec2.amazonaws.com\",\n"
+                    ],
+                    [
+                        86,
+                        "        \"s3.amazonaws.com\",\n"
+                    ],
+                    [
+                        87,
+                        "      ]\n"
+                    ],
+                    [
+                        88,
+                        "    }\n"
+                    ],
+                    [
+                        89,
+                        "\n"
+                    ],
+                    [
+                        90,
+                        "    actions = [\n"
+                    ],
+                    [
+                        91,
+                        "      \"kms:Encrypt\",\n"
+                    ],
+                    [
+                        92,
+                        "      \"kms:Decrypt\",\n"
+                    ],
+                    [
+                        93,
+                        "      \"kms:ReEncrypt*\",\n"
+                    ],
+                    [
+                        94,
+                        "      \"kms:GenerateDataKey*\",\n"
+                    ],
+                    [
+                        95,
+                        "      \"kms:DescribeKey\",\n"
+                    ],
+                    [
+                        96,
+                        "      \"kms:CreateGrant\",\n"
+                    ],
+                    [
+                        97,
+                        "    ]\n"
+                    ],
+                    [
+                        98,
+                        "    resources = [\"*\"]\n"
+                    ],
+                    [
+                        99,
+                        "\n"
+                    ],
+                    [
+                        100,
+                        "    condition {\n"
+                    ],
+                    [
+                        101,
+                        "      test     = \"StringEquals\"\n"
+                    ],
+                    [
+                        102,
+                        "      variable = \"kms:CallerAccount\"\n"
+                    ],
+                    [
+                        103,
+                        "      values   = [var.account_id]\n"
+                    ],
+                    [
+                        104,
+                        "    }\n"
+                    ],
+                    [
+                        105,
+                        "  }\n"
+                    ],
+                    [
+                        106,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/logging.tf",
+                "file_abs_path": "fixed/logging.tf",
+                "repo_file_path": "/fixed/logging.tf",
+                "file_line_range": [
+                    16,
+                    106
+                ],
+                "resource": "aws_iam_policy_document.kms",
+                "evaluations": null,
+                "check_class": "checkov.terraform.checks.data.aws.IAMPermissionsManagement",
+                "fixed_definition": null,
+                "entity_tags": null,
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-iam-policies-do-not-allow-permissions-management-resource-exposure-without-constraint",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/logging.tf",
+                "breadcrumbs": {
+                    "statement.0.principals.identifiers.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0.principals.identifiers": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0.principals": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1.condition": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.1": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.condition": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition.values.0": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition.values": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3.condition": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.3": [
+                        {
+                            "type": "variable",
+                            "name": "account_id",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals.identifiers.0": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals.identifiers": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "statement.2.principals": [
+                        {
+                            "type": "variable",
+                            "name": "aws_region",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV2_AWS_62",
+                "bc_check_id": "BC_AWS_LOGGING_36",
+                "check_name": "Ensure S3 buckets should have event notifications enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "data": {
+                                "__end_line__": 7,
+                                "__start_line__": 1,
+                                "bucket": [
+                                    "cloud-misconfig-lab-123456789012-data"
+                                ],
+                                "tags": [
+                                    {
+                                        "Environment": "lab",
+                                        "ManagedBy": "terraform",
+                                        "Project": "cloud-misconfig-lab",
+                                        "Name": "lab-data"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.data"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "resource_type"
+                    ]
+                },
+                "code_block": [
+                    [
+                        1,
+                        "resource \"aws_s3_bucket\" \"data\" {\n"
+                    ],
+                    [
+                        2,
+                        "  bucket = local.data_bucket_name\n"
+                    ],
+                    [
+                        3,
+                        "\n"
+                    ],
+                    [
+                        4,
+                        "  tags = merge(local.common_tags, {\n"
+                    ],
+                    [
+                        5,
+                        "    Name = \"lab-data\"\n"
+                    ],
+                    [
+                        6,
+                        "  })\n"
+                    ],
+                    [
+                        7,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/storage.tf",
+                "file_abs_path": "fixed/storage.tf",
+                "repo_file_path": "/fixed/storage.tf",
+                "file_line_range": [
+                    1,
+                    7
+                ],
+                "resource": "aws_s3_bucket.data",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Environment": "lab",
+                    "ManagedBy": "terraform",
+                    "Project": "cloud-misconfig-lab",
+                    "Name": "lab-data"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/storage.tf",
+                "breadcrumbs": {
+                    "tags": [
+                        {
+                            "type": "locals",
+                            "name": "common_tags",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "bucket": [
+                        {
+                            "type": "variable",
+                            "name": "name_prefix",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        },
+                        {
+                            "type": "locals",
+                            "name": "data_bucket_name",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV2_AWS_62",
+                "bc_check_id": "BC_AWS_LOGGING_36",
+                "check_name": "Ensure S3 buckets should have event notifications enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "logs": {
+                                "__end_line__": 106,
+                                "__start_line__": 100,
+                                "bucket": [
+                                    "cloud-misconfig-lab-123456789012-logs"
+                                ],
+                                "tags": [
+                                    {
+                                        "Environment": "lab",
+                                        "ManagedBy": "terraform",
+                                        "Project": "cloud-misconfig-lab",
+                                        "Name": "lab-logs"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.logs"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "resource_type"
+                    ]
+                },
+                "code_block": [
+                    [
+                        100,
+                        "resource \"aws_s3_bucket\" \"logs\" {\n"
+                    ],
+                    [
+                        101,
+                        "  bucket = local.logs_bucket_name\n"
+                    ],
+                    [
+                        102,
+                        "\n"
+                    ],
+                    [
+                        103,
+                        "  tags = merge(local.common_tags, {\n"
+                    ],
+                    [
+                        104,
+                        "    Name = \"lab-logs\"\n"
+                    ],
+                    [
+                        105,
+                        "  })\n"
+                    ],
+                    [
+                        106,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/storage.tf",
+                "file_abs_path": "fixed/storage.tf",
+                "repo_file_path": "/fixed/storage.tf",
+                "file_line_range": [
+                    100,
+                    106
+                ],
+                "resource": "aws_s3_bucket.logs",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Environment": "lab",
+                    "ManagedBy": "terraform",
+                    "Project": "cloud-misconfig-lab",
+                    "Name": "lab-logs"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/storage.tf",
+                "breadcrumbs": {
+                    "tags": [
+                        {
+                            "type": "locals",
+                            "name": "common_tags",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "bucket": [
+                        {
+                            "type": "variable",
+                            "name": "name_prefix",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        },
+                        {
+                            "type": "locals",
+                            "name": "logs_bucket_name",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV2_AWS_62",
+                "bc_check_id": "BC_AWS_LOGGING_36",
+                "check_name": "Ensure S3 buckets should have event notifications enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "trail": {
+                                "__end_line__": 256,
+                                "__start_line__": 250,
+                                "bucket": [
+                                    "cloud-misconfig-lab-123456789012-trail"
+                                ],
+                                "tags": [
+                                    {
+                                        "Environment": "lab",
+                                        "ManagedBy": "terraform",
+                                        "Project": "cloud-misconfig-lab",
+                                        "Name": "lab-trail"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.trail"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "resource_type"
+                    ]
+                },
+                "code_block": [
+                    [
+                        250,
+                        "resource \"aws_s3_bucket\" \"trail\" {\n"
+                    ],
+                    [
+                        251,
+                        "  bucket = local.trail_bucket_name\n"
+                    ],
+                    [
+                        252,
+                        "\n"
+                    ],
+                    [
+                        253,
+                        "  tags = merge(local.common_tags, {\n"
+                    ],
+                    [
+                        254,
+                        "    Name = \"lab-trail\"\n"
+                    ],
+                    [
+                        255,
+                        "  })\n"
+                    ],
+                    [
+                        256,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/storage.tf",
+                "file_abs_path": "fixed/storage.tf",
+                "repo_file_path": "/fixed/storage.tf",
+                "file_line_range": [
+                    250,
+                    256
+                ],
+                "resource": "aws_s3_bucket.trail",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Environment": "lab",
+                    "ManagedBy": "terraform",
+                    "Project": "cloud-misconfig-lab",
+                    "Name": "lab-trail"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/storage.tf",
+                "breadcrumbs": {
+                    "tags": [
+                        {
+                            "type": "locals",
+                            "name": "common_tags",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "bucket": [
+                        {
+                            "type": "variable",
+                            "name": "name_prefix",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        },
+                        {
+                            "type": "locals",
+                            "name": "trail_bucket_name",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV_AWS_144",
+                "bc_check_id": "BC_AWS_GENERAL_72",
+                "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "data": {
+                                "__end_line__": 7,
+                                "__start_line__": 1,
+                                "bucket": [
+                                    "cloud-misconfig-lab-123456789012-data"
+                                ],
+                                "tags": [
+                                    {
+                                        "Environment": "lab",
+                                        "ManagedBy": "terraform",
+                                        "Project": "cloud-misconfig-lab",
+                                        "Name": "lab-data"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.data"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "replication_configuration/rules/*/status",
+                        "resource_type",
+                        "rule/*/status"
+                    ]
+                },
+                "code_block": [
+                    [
+                        1,
+                        "resource \"aws_s3_bucket\" \"data\" {\n"
+                    ],
+                    [
+                        2,
+                        "  bucket = local.data_bucket_name\n"
+                    ],
+                    [
+                        3,
+                        "\n"
+                    ],
+                    [
+                        4,
+                        "  tags = merge(local.common_tags, {\n"
+                    ],
+                    [
+                        5,
+                        "    Name = \"lab-data\"\n"
+                    ],
+                    [
+                        6,
+                        "  })\n"
+                    ],
+                    [
+                        7,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/storage.tf",
+                "file_abs_path": "fixed/storage.tf",
+                "repo_file_path": "/fixed/storage.tf",
+                "file_line_range": [
+                    1,
+                    7
+                ],
+                "resource": "aws_s3_bucket.data",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Environment": "lab",
+                    "ManagedBy": "terraform",
+                    "Project": "cloud-misconfig-lab",
+                    "Name": "lab-data"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-bucket-has-cross-region-replication-enabled",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/storage.tf",
+                "breadcrumbs": {
+                    "tags": [
+                        {
+                            "type": "locals",
+                            "name": "common_tags",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "bucket": [
+                        {
+                            "type": "variable",
+                            "name": "name_prefix",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        },
+                        {
+                            "type": "locals",
+                            "name": "data_bucket_name",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV_AWS_144",
+                "bc_check_id": "BC_AWS_GENERAL_72",
+                "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "logs": {
+                                "__end_line__": 106,
+                                "__start_line__": 100,
+                                "bucket": [
+                                    "cloud-misconfig-lab-123456789012-logs"
+                                ],
+                                "tags": [
+                                    {
+                                        "Environment": "lab",
+                                        "ManagedBy": "terraform",
+                                        "Project": "cloud-misconfig-lab",
+                                        "Name": "lab-logs"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.logs"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "replication_configuration/rules/*/status",
+                        "resource_type",
+                        "rule/*/status"
+                    ]
+                },
+                "code_block": [
+                    [
+                        100,
+                        "resource \"aws_s3_bucket\" \"logs\" {\n"
+                    ],
+                    [
+                        101,
+                        "  bucket = local.logs_bucket_name\n"
+                    ],
+                    [
+                        102,
+                        "\n"
+                    ],
+                    [
+                        103,
+                        "  tags = merge(local.common_tags, {\n"
+                    ],
+                    [
+                        104,
+                        "    Name = \"lab-logs\"\n"
+                    ],
+                    [
+                        105,
+                        "  })\n"
+                    ],
+                    [
+                        106,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/storage.tf",
+                "file_abs_path": "fixed/storage.tf",
+                "repo_file_path": "/fixed/storage.tf",
+                "file_line_range": [
+                    100,
+                    106
+                ],
+                "resource": "aws_s3_bucket.logs",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Environment": "lab",
+                    "ManagedBy": "terraform",
+                    "Project": "cloud-misconfig-lab",
+                    "Name": "lab-logs"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-bucket-has-cross-region-replication-enabled",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/storage.tf",
+                "breadcrumbs": {
+                    "tags": [
+                        {
+                            "type": "locals",
+                            "name": "common_tags",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "bucket": [
+                        {
+                            "type": "variable",
+                            "name": "name_prefix",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        },
+                        {
+                            "type": "locals",
+                            "name": "logs_bucket_name",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            },
+            {
+                "check_id": "CKV_AWS_144",
+                "bc_check_id": "BC_AWS_GENERAL_72",
+                "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+                "check_result": {
+                    "result": "FAILED",
+                    "entity": {
+                        "aws_s3_bucket": {
+                            "trail": {
+                                "__end_line__": 256,
+                                "__start_line__": 250,
+                                "bucket": [
+                                    "cloud-misconfig-lab-123456789012-trail"
+                                ],
+                                "tags": [
+                                    {
+                                        "Environment": "lab",
+                                        "ManagedBy": "terraform",
+                                        "Project": "cloud-misconfig-lab",
+                                        "Name": "lab-trail"
+                                    }
+                                ],
+                                "__address__": "aws_s3_bucket.trail"
+                            }
+                        }
+                    },
+                    "evaluated_keys": [
+                        "replication_configuration/rules/*/status",
+                        "resource_type",
+                        "rule/*/status"
+                    ]
+                },
+                "code_block": [
+                    [
+                        250,
+                        "resource \"aws_s3_bucket\" \"trail\" {\n"
+                    ],
+                    [
+                        251,
+                        "  bucket = local.trail_bucket_name\n"
+                    ],
+                    [
+                        252,
+                        "\n"
+                    ],
+                    [
+                        253,
+                        "  tags = merge(local.common_tags, {\n"
+                    ],
+                    [
+                        254,
+                        "    Name = \"lab-trail\"\n"
+                    ],
+                    [
+                        255,
+                        "  })\n"
+                    ],
+                    [
+                        256,
+                        "}\n"
+                    ]
+                ],
+                "file_path": "/storage.tf",
+                "file_abs_path": "fixed/storage.tf",
+                "repo_file_path": "/fixed/storage.tf",
+                "file_line_range": [
+                    250,
+                    256
+                ],
+                "resource": "aws_s3_bucket.trail",
+                "evaluations": null,
+                "check_class": "checkov.common.graph.checks_infra.base_check",
+                "fixed_definition": null,
+                "entity_tags": {
+                    "Environment": "lab",
+                    "ManagedBy": "terraform",
+                    "Project": "cloud-misconfig-lab",
+                    "Name": "lab-trail"
+                },
+                "caller_file_path": null,
+                "caller_file_line_range": null,
+                "resource_address": null,
+                "severity": null,
+                "bc_category": null,
+                "benchmarks": null,
+                "description": null,
+                "short_description": null,
+                "vulnerability_details": null,
+                "connected_node": null,
+                "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-bucket-has-cross-region-replication-enabled",
+                "details": [],
+                "check_len": null,
+                "definition_context_file_path": "fixed/storage.tf",
+                "breadcrumbs": {
+                    "tags": [
+                        {
+                            "type": "locals",
+                            "name": "common_tags",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ],
+                    "bucket": [
+                        {
+                            "type": "variable",
+                            "name": "name_prefix",
+                            "path": "fixed/variables.tf",
+                            "module_connection": false
+                        },
+                        {
+                            "type": "locals",
+                            "name": "trail_bucket_name",
+                            "path": "fixed/locals.tf",
+                            "module_connection": false
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "summary": {
+        "passed": 229,
+        "failed": 10,
+        "skipped": 0,
+        "parsing_errors": 0,
+        "resource_count": 50,
+        "checkov_version": "3.2.449"
+    }
+}

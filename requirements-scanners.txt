@@ -1,0 +1,2 @@
+# Scanner used by scripts/scan.sh and CI. The misconfig report tool is stdlib only.
+checkov==3.2.449
